@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030307">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>3D Cinematic Visual Dimension</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Dynamic Starfield & Nebula Canvas -->
+    <canvas id="ambient-canvas"></canvas>
+
+    <!-- Hidden Multi-Image File Input -->
+    <input type="file" id="image-file-input" multiple accept="image/*" style="display: none;">
+
+    <!-- Drag & Drop Visual Overlay -->
+    <div id="drop-overlay" class="drop-zone-overlay">
+        <div class="drop-zone-box">
+            <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Dynamic Lighting & Vignette Overlay -->
+    <div id="lighting-overlay"></div>
+    <div id="chromatic-fringe"></div>
+
+    <!-- Main 3D Viewport System -->
+    <div id="viewport">
+        <div id="camera">
+            <div id="world">
+                <!-- Dynamically populated 3D image entities -->
+                <div id="image-container"></div>
+                <!-- 3D Polyhedral Cubes Container -->
+                <div id="cube-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Minimalist Non-Text Icon-Only HUD -->
+    <nav id="hud" class="hud-panel" aria-label="Visual Navigation">
+        <!-- User Custom Image Upload Button -->
+        <button id="btn-upload" class="hud-btn" aria-label="Select / Upload Images" title="Upload Images">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+                <line x1="12" y1="9" x2="12" y2="15"></line>
+                <line x1="9" y1="12" x2="15" y2="12"></line>
+            </svg>
+            <span id="upload-badge" class="hud-badge">0</span>
+        </button>
+
+        <!-- Share / Copy Link Button -->
+        <button id="btn-share" class="hud-btn" aria-label="Share Link" title="Share Experience">
+            <svg class="icon icon-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+            <svg class="icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: none; color: #00f5d4;">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </button>
+
+        <!-- Record & Download Video Button -->
+        <button id="btn-record" class="hud-btn" aria-label="Record & Download Video" title="Record Video">
+            <svg class="icon icon-record-start" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="12" r="2.5" fill="currentColor"></circle>
+            </svg>
+            <svg class="icon icon-record-stop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none; color: #ff007f;">
+                <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"></rect>
+            </svg>
+        </button>
+
+        <!-- Audio Synthesizer Toggle -->
+        <button id="btn-audio" class="hud-btn" aria-label="Sound Toggle" title="Audio">
+            <svg class="icon icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+            <svg class="icon icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+        </button>
+
+        <!-- Scene Selector Geometric Icon Glyphs -->
+        <div class="hud-divider"></div>
+        <div id="scene-nav" class="scene-indicators">
+            <!-- Scene 0: Awakening Void -->
+            <button class="scene-btn active" data-scene="0" aria-label="Scene 1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <circle cx="12" cy="12" r="8" stroke-dasharray="2 4"></circle>
+                </svg>
+            </button>
+            <!-- Scene 1: Floating Image Void / Field -->
+            <button class="scene-btn" data-scene="1" aria-label="Scene 2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="6" cy="7" r="1.5" fill="currentColor"></circle>
+                    <circle cx="18" cy="9" r="2" fill="currentColor"></circle>
+                    <circle cx="10" cy="17" r="2.5" fill="currentColor"></circle>
+                    <circle cx="19" cy="18" r="1.5" fill="currentColor"></circle>
+                </svg>
+            </button>
+            <!-- Scene 2: Hyper-Tunnel -->
+            <button class="scene-btn" data-scene="2" aria-label="Scene 3">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </button>
+            <!-- Scene 3: Geodesic Sphere -->
+            <button class="scene-btn" data-scene="3" aria-label="Scene 4">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <ellipse cx="12" cy="12" rx="9" ry="3.5"></ellipse>
+                    <ellipse cx="12" cy="12" rx="3.5" ry="9"></ellipse>
+                </svg>
+            </button>
+            <!-- Scene 4: Infinite Spiral -->
+            <button class="scene-btn" data-scene="4" aria-label="Scene 5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 12a1 1 0 0 0 1-1 2 2 0 0 0-2-2 3 3 0 0 0-3 3 4 4 0 0 0 4 4 5 5 0 0 0 5-5 6 6 0 0 0-6-6 7 7 0 0 0-7 7 8 8 0 0 0 8 8"></path>
+                </svg>
+            </button>
+            <!-- Scene 5: 3D Cubes Dimension -->
+            <button class="scene-btn" data-scene="5" aria-label="Scene 6">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+            </button>
+            <!-- Scene 6: Supernova Explosion -->
+            <button class="scene-btn" data-scene="6" aria-label="Scene 7">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+                    <line x1="12" y1="3" x2="12" y2="7"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                    <line x1="3" y1="12" x2="7" y2="12"></line>
+                    <line x1="17" y1="12" x2="21" y2="12"></line>
+                    <line x1="5.64" y1="5.64" x2="8.46" y2="8.46"></line>
+                    <line x1="15.54" y1="15.54" x2="18.36" y2="18.36"></line>
+                    <line x1="5.64" y1="18.36" x2="8.46" y2="15.54"></line>
+                    <line x1="15.54" y1="8.46" x2="18.36" y2="5.64"></line>
+                </svg>
+            </button>
+            <!-- Scene 7: Curved Archive Wall -->
+            <button class="scene-btn" data-scene="7" aria-label="Scene 8">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="5" height="16" rx="1"></rect>
+                    <rect x="10" y="4" width="5" height="16" rx="1"></rect>
+                    <rect x="17" y="4" width="5" height="16" rx="1"></rect>
+                </svg>
+            </button>
+            <!-- Scene 8: Multiverse Matrix Universe -->
+            <button class="scene-btn" data-scene="8" aria-label="Scene 9">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+                    <circle cx="4" cy="4" r="1.5" fill="currentColor"></circle>
+                    <circle cx="20" cy="4" r="1.5" fill="currentColor"></circle>
+                    <circle cx="4" cy="20" r="1.5" fill="currentColor"></circle>
+                    <circle cx="20" cy="20" r="1.5" fill="currentColor"></circle>
+                    <line x1="4" y1="4" x2="12" y2="12" stroke-dasharray="1 2"></line>
+                    <line x1="20" y1="4" x2="12" y2="12" stroke-dasharray="1 2"></line>
+                    <line x1="4" y1="20" x2="12" y2="12" stroke-dasharray="1 2"></line>
+                    <line x1="20" y1="20" x2="12" y2="12" stroke-dasharray="1 2"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="hud-divider"></div>
+
+        <!-- Auto-Cruise / Cinematic Journey Play/Pause -->
+        <button id="btn-play" class="hud-btn active" aria-label="Auto Pilot" title="Auto Journey">
+            <svg class="icon icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+                <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+            </svg>
+            <svg class="icon icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+        </button>
+
+        <!-- Reset Camera Position / Angle -->
+        <button id="btn-reset" class="hud-btn" aria-label="Reset Camera" title="Reset View">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+            </svg>
+        </button>
+
+        <!-- Fullscreen Mode Toggle -->
+        <button id="btn-fullscreen" class="hud-btn" aria-label="Fullscreen" title="Fullscreen">
+            <svg class="icon icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+            <svg class="icon icon-compress" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M4 10h6m0 0V4m0 6L3 3m17 7h-6m0 0V4m0 6l7-7"></path>
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Video Recording Status Overlay -->
+    <div id="recording-overlay" class="recording-badge">
+        <span class="rec-dot"></span>
+        <svg class="rec-ring" viewBox="0 0 36 36">
+            <path class="rec-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+            <path id="rec-progress-bar" class="rec-ring-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+        </svg>
+    </div>
+
+    <!-- Minimalist Visual Notification Toast (Icon Only) -->
+    <div id="toast-notify" class="toast-pill">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    </div>
+
+    <!-- Inspection Mode Close Button (Icon Only) -->
+    <button id="btn-close-inspect" class="inspect-close-btn" aria-label="Close Focus View">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- Custom Glowing Visual Pointer / Reticle -->
+    <div id="custom-cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
